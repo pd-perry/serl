@@ -47,6 +47,7 @@ flags.DEFINE_integer("seed", 42, "Random seed.")
 flags.DEFINE_bool("save_model", False, "Whether to save model.")
 flags.DEFINE_integer("batch_size", 256, "Batch size.")
 flags.DEFINE_integer("utd_ratio", 4, "UTD ratio.")
+flags.DEFINE_bool("intervention_feedback", False, "Whether to use intervention feedback.")
 
 flags.DEFINE_integer("max_steps", 1000000, "Maximum number of training steps.")
 flags.DEFINE_integer("replay_buffer_capacity", 200000, "Replay buffer capacity.")
@@ -90,7 +91,7 @@ def print_green(x):
 ##############################################################################
 
 
-def actor(agent: DrQAgent, data_store, env, sampling_rng):
+def actor(agent: DrQAgent, data_store, env, sampling_rng, intervention_feedback):
     """
     This is the actor loop, which runs when "--actor" is set to True.
     """
@@ -178,6 +179,9 @@ def actor(agent: DrQAgent, data_store, env, sampling_rng):
             # override the action with the intervention action
             if "intervene_action" in info:
                 actions = info.pop("intervene_action")
+
+                if intervention_feedback:
+                    data_store.update_intervention()
 
             reward = np.asarray(reward, dtype=np.float32)
             info = np.asarray(info)
@@ -394,7 +398,7 @@ def main(_):
 
         # actor loop
         print_green("starting actor loop")
-        actor(agent, data_store, env, sampling_rng)
+        actor(agent, data_store, env, sampling_rng, intervention_feedback=FLAGS.use_intervention_feedback)
 
     else:
         raise NotImplementedError("Must be either a learner or an actor")

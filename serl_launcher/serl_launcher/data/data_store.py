@@ -66,7 +66,7 @@ class MemoryEfficientReplayBufferDataStore(MemoryEfficientReplayBuffer, DataStor
             return super(MemoryEfficientReplayBufferDataStore, self).sample(
                 *args, **kwargs
             )
-
+        
     # NOTE: method for DataStoreBase
     def latest_data_id(self):
         return self._insert_index

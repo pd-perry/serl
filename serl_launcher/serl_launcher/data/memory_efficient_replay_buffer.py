@@ -49,6 +49,9 @@ class MemoryEfficientReplayBuffer(ReplayBuffer):
             capacity,
             next_observation_space=next_observation_space,
         )
+    
+    def update_intervention(self):
+        self.dataset_dict['rewards'][self._insert_index - 1] = -1
 
     def insert(self, data_dict: DatasetDict):
         if self._insert_index == 0 and self._capacity == len(self) and not self._first:
